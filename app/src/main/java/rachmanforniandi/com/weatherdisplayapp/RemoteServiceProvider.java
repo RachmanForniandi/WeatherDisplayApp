@@ -2,6 +2,9 @@ package rachmanforniandi.com.weatherdisplayapp;
 
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
+import rachmanforniandi.Events.WeatherEvent;
 import rachmanforniandi.com.weatherdisplayapp.Models.Currently;
 import rachmanforniandi.com.weatherdisplayapp.Models.Weather;
 import retrofit2.Call;
@@ -32,8 +35,10 @@ public class RemoteServiceProvider {
         data.enqueue(new Callback<Weather>() {
             @Override
             public void onResponse(Call<Weather> call, Response<Weather> response) {
+                Weather weather = response.body();
                 Currently currently = response.body().getCurrently();
                 Log.e(TAG,"Temperature = " + currently.getTemperature());
+                EventBus.getDefault().post(new WeatherEvent(weather));
             }
 
             @Override

@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -11,6 +12,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rachmanforniandi.Events.ErrorEvent;
 import rachmanforniandi.Events.WeatherEvent;
 import rachmanforniandi.com.weatherdisplayapp.Models.Currently;
 import rachmanforniandi.com.weatherdisplayapp.Models.Weather;
@@ -50,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
     public void onWeatherEvent(WeatherEvent weatherEvent) {
         Currently currently =weatherEvent.getWeather().getCurrently();
         tempValue.setText(String.valueOf(Math.round(currently.getTemperature())));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onErrorEvent(ErrorEvent errorEvent) {
+        Toast.makeText(this, errorEvent.getErrorMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private void requestDataWeather(double lat, double lng) {

@@ -1,9 +1,11 @@
 package rachmanforniandi.com.weatherdisplayapp;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
+import rachmanforniandi.Events.ErrorEvent;
 import rachmanforniandi.Events.WeatherEvent;
 import rachmanforniandi.com.weatherdisplayapp.Models.Currently;
 import rachmanforniandi.com.weatherdisplayapp.Models.Weather;
@@ -36,14 +38,22 @@ public class RemoteServiceProvider {
             @Override
             public void onResponse(Call<Weather> call, Response<Weather> response) {
                 Weather weather = response.body();
-                Currently currently = response.body().getCurrently();
-                Log.e(TAG,"Temperature = " + currently.getTemperature());
-                EventBus.getDefault().post(new WeatherEvent(weather));
+                if (weather != null){
+                    Currently currently = response.body().getCurrently();
+                    Log.e(TAG,"Temperature = " + currently.getTemperature());
+                    EventBus.getDefault().post(new WeatherEvent(weather));
+                }else {
+                    Log.e(TAG,"No Response: check the secret key ");
+                    EventBus.getDefault().post(new ErrorEvent("No weather data available "));
+                }
+
             }
 
             @Override
             public void onFailure(Call<Weather> call, Throwable t) {
                 Log.e(TAG,"onFailure: Unable to get weather data");
+                EventBus.getDefault().post(new ErrorEvent("Unable to connect weather server"));
+
             }
         });
     }
